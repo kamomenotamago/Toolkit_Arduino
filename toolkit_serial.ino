@@ -1,5 +1,14 @@
-unsigned char val;
+#include <Adafruit_NeoPixel.h>
+unsigned char val,r,g,b;
 const int val_size = 2;
+
+// RGBLEDに出力するピン番号
+#define RGBLED_OUTPIN    2
+// Arduinoにぶら下がっているRGBLEDの個数
+#define NUMRGBLED        1
+
+// RGBLEDのライブラリを生成する(色指定はRGBの並びで行う、LEDの速度は800KHzとする)
+Adafruit_NeoPixel RGBLED = Adafruit_NeoPixel(NUMRGBLED, RGBLED_OUTPIN, NEO_RGB + NEO_KHZ800);
 
 void setup() {
   // put your setup code here, to run once:
@@ -18,10 +27,15 @@ void setup() {
   pinMode(2,OUTPUT);
   pinMode(1,OUTPUT);
 
+  RGBLED.begin() ;                   // RGBLEDのライブラリを初期化する
+  RGBLED.setBrightness(50) ; 
+  RGBLED.setPixelColor(0,0,0,0) ; // 適度に明るい緑の色。(R=0,G=150,B=0)
+  RGBLED.show() ; 
 }
 
 void loop() {
   if(Serial.available() >= val_size){//データを発見したら
+    
     int head = Serial.read();
 
       if(head==1){
@@ -153,7 +167,18 @@ void loop() {
           //Serial.println(val,DEC);
           analogWrite(13,val);//PWM
         }
-     } 
+     } else if(head==14){
+        Serial.println(head);
+        r = Serial.read();
+        Serial.println(r);
+        g = Serial.read();
+        Serial.println(g);
+        b = Serial.read();
+        Serial.println(b);
+        RGBLED.setPixelColor(0,r,g,b) ; 
+        RGBLED.show() ; 
+        
+      }
      
   }else{
   }
